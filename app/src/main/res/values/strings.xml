@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Budget Buddy</string>
+    <string name="title_registrar_gasto">Registrar gasto</string>
+    <string name="hint_monto">Monto</string>
+    <string name="hint_comentario">Comentario</string>
+    <string name="btn_registrar">Registrar</string>
+    <string-array name="prompts_categoria">
+        <item>(Cargando...)</item>
+    </string-array>
+</resources>
