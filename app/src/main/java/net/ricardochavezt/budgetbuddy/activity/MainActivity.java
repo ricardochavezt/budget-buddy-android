@@ -1,12 +1,21 @@
-package net.ricardochavezt.budgetbuddy;
+package net.ricardochavezt.budgetbuddy.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import net.ricardochavezt.budgetbuddy.R;
+import net.ricardochavezt.budgetbuddy.model.Category;
+import net.ricardochavezt.budgetbuddy.viewmodel.CategoriesViewModel;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,6 +41,14 @@ public class MainActivity extends AppCompatActivity {
                 R.array.prompts_categoria, android.R.layout.simple_dropdown_item_1line);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCategoria.setAdapter(spinnerAdapter);
+
+        CategoriesViewModel categoriesViewModel = ViewModelProviders.of(this).get(CategoriesViewModel.class);
+        categoriesViewModel.getCategories().observe(this, categories -> {
+            ArrayAdapter<Category> categoryAdapter = new ArrayAdapter<>(MainActivity.this,
+                    android.R.layout.simple_dropdown_item_1line, categories);
+            categoryAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+            spCategoria.setAdapter(categoryAdapter);
+        });
     }
 
     @OnClick(R.id.btnRegistrar)
