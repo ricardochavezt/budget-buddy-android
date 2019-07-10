@@ -4,6 +4,10 @@
     <string name="hint_monto">Monto</string>
     <string name="hint_comentario">Comentario</string>
     <string name="btn_registrar">Registrar</string>
+    <string name="error_category_not_selected">Debe seleccionar una categoría para el gasto</string>
+    <string name="error_saving_expense">Error al registrar gasto</string>
+    <string name="error_message_title">Error</string>
+    <string name="saving_expense_ok">Gasto registrado</string>
     <string-array name="prompts_categoria">
         <item>(Cargando...)</item>
     </string-array>

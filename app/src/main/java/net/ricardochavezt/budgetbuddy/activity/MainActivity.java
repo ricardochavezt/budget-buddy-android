@@ -75,17 +75,20 @@ public class MainActivity extends AppCompatActivity {
                             tilMonto.setError(saveExpenseResponse.getAmountErrorMessage());
                         }
                         if (saveExpenseResponse.isCategoryError()) {
-                            Toast.makeText(this, "Debe seleccionar una categoría para el gasto", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, R.string.error_category_not_selected, Toast.LENGTH_SHORT)
+                                    .show();
                         }
-                        Snackbar.make(tilMonto, "Error al registrar gasto", Snackbar.LENGTH_SHORT).setAction("Ver mensaje", view -> {
-                            new AlertDialog.Builder(this).setTitle("Error")
+                        Snackbar.make(tilMonto, R.string.error_saving_expense, Snackbar.LENGTH_SHORT).setAction("Ver mensaje", view -> {
+                            new AlertDialog.Builder(this)
+                                    .setTitle(R.string.error_message_title)
                                     .setMessage(saveExpenseResponse.getErrorMessage())
                                     .setPositiveButton(android.R.string.ok, null)
                                     .show();
                         }).show();
                     }
                     else {
-                        Snackbar.make(tilMonto, "Gasto registrado", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(tilMonto, R.string.saving_expense_ok, Snackbar.LENGTH_SHORT)
+                                .show();
                     }
                 });
     }
