@@ -1,7 +1,6 @@
 package net.ricardochavezt.budgetbuddy.viewmodel;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import net.ricardochavezt.budgetbuddy.model.Category;
