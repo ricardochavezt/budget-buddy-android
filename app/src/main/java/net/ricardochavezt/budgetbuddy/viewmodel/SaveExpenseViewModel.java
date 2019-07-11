@@ -48,7 +48,6 @@ public class SaveExpenseViewModel extends ViewModel {
             response.amountErrorMessage = "Debe ingresar un monto";
         }
         else {
-
             try {
                 new BigDecimal(amount);
             } catch (NumberFormatException e) {

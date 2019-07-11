@@ -2,9 +2,12 @@ package net.ricardochavezt.budgetbuddy.activity;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -41,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         ButterKnife.bind(this);
 
@@ -73,22 +78,34 @@ public class MainActivity extends AppCompatActivity {
                         if (saveExpenseResponse.isAmountError()) {
                             tilMonto.setError(saveExpenseResponse.getAmountErrorMessage());
                         }
-                        if (saveExpenseResponse.isCategoryError()) {
+                        else if (saveExpenseResponse.isCategoryError()) {
                             Toast.makeText(this, R.string.error_category_not_selected, Toast.LENGTH_SHORT)
                                     .show();
                         }
-                        Snackbar.make(tilMonto, R.string.error_saving_expense, Snackbar.LENGTH_SHORT).setAction("Ver mensaje", view -> {
-                            new AlertDialog.Builder(this)
-                                    .setTitle(R.string.error_message_title)
-                                    .setMessage(saveExpenseResponse.getErrorMessage())
-                                    .setPositiveButton(android.R.string.ok, null)
-                                    .show();
-                        }).show();
+                        else {
+                            hideSoftKeyboard();
+                            Snackbar.make(tilMonto, R.string.error_saving_expense, Snackbar.LENGTH_SHORT).setAction("Ver mensaje", view -> {
+                                new AlertDialog.Builder(this)
+                                        .setTitle(R.string.error_message_title)
+                                        .setMessage(saveExpenseResponse.getErrorMessage())
+                                        .setPositiveButton(android.R.string.ok, null)
+                                        .show();
+                            }).show();
+                        }
                     }
                     else {
+                        hideSoftKeyboard();
                         Snackbar.make(tilMonto, R.string.saving_expense_ok, Snackbar.LENGTH_SHORT)
                                 .show();
                     }
                 });
+    }
+
+    private void hideSoftKeyboard() {
+        View focusedView = this.getCurrentFocus();
+        if (focusedView != null) {
+            InputMethodManager imm = getSystemService(InputMethodManager.class);
+            imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
+        }
     }
 }
