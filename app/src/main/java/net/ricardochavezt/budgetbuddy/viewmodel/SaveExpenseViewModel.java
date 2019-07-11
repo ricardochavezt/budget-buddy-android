@@ -40,9 +40,8 @@ public class SaveExpenseViewModel extends ViewModel {
         }
     }
 
-    private MutableLiveData<SaveExpenseResponse> saveExpenseResponse = new MutableLiveData<>();
-
     public LiveData<SaveExpenseResponse> saveExpense(String amount, int categoryId, String comment, Date madeAt) {
+        MutableLiveData<SaveExpenseResponse> saveExpenseResponse = new MutableLiveData<>();
         SaveExpenseResponse response = new SaveExpenseResponse();
         if (amount == null || amount.trim().isEmpty()) {
             response.amountError = true;
