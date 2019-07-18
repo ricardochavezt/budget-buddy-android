@@ -9,6 +9,7 @@
     <string name="error_message_title">Error</string>
     <string name="saving_expense_ok">Gasto registrado</string>
     <string name="mensaje_guardando">Guardando</string>
+    <string name="hint_fecha">Fecha (dd/mm/yyyy)</string>
     <string-array name="prompts_categoria">
         <item>(Cargando...)</item>
     </string-array>

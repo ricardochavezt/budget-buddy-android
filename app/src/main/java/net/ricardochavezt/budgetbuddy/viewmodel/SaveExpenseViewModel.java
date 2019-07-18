@@ -8,6 +8,8 @@ import net.ricardochavezt.budgetbuddy.model.Expense;
 import net.ricardochavezt.budgetbuddy.repository.ExpenseRepository;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SaveExpenseViewModel extends ViewModel {
@@ -39,6 +41,8 @@ public class SaveExpenseViewModel extends ViewModel {
             return amountError;
         }
     }
+
+    public static final DateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
 
     public LiveData<SaveExpenseResponse> saveExpense(String amount, int categoryId, String comment, Date madeAt) {
         MutableLiveData<SaveExpenseResponse> saveExpenseResponse = new MutableLiveData<>();
