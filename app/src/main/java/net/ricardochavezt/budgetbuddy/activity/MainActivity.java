@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     EditText etComentario;
     @BindView(R.id.tilMonto)
     TextInputLayout tilMonto;
+    @BindView(R.id.progressOverlay)
+    View progressOverlay;
 
     private SaveExpenseViewModel viewModel;
 
@@ -69,11 +71,13 @@ public class MainActivity extends AppCompatActivity {
     public void btnRegistrarClick() {
         // TODO clear on edit
         tilMonto.setError(null);
+        progressOverlay.setVisibility(View.VISIBLE);
 
         Category selectedCategory = (Category) spCategoria.getSelectedItem();
         int categoryId = selectedCategory != null ? selectedCategory.getId() : -1;
         viewModel.saveExpense(etMonto.getText().toString(), categoryId, etComentario.getText().toString(), new Date())
                 .observe(this, saveExpenseResponse -> {
+                    progressOverlay.setVisibility(View.GONE);
                     if (!saveExpenseResponse.isSaveOK()) {
                         if (saveExpenseResponse.isAmountError()) {
                             tilMonto.setError(saveExpenseResponse.getAmountErrorMessage());

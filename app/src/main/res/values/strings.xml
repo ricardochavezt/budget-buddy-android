@@ -8,6 +8,7 @@
     <string name="error_saving_expense">Error al registrar gasto</string>
     <string name="error_message_title">Error</string>
     <string name="saving_expense_ok">Gasto registrado</string>
+    <string name="mensaje_guardando">Guardando</string>
     <string-array name="prompts_categoria">
         <item>(Cargando...)</item>
     </string-array>
