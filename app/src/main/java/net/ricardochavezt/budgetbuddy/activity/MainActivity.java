@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else {
                         hideSoftKeyboard();
+                        clearFields();
                         Snackbar.make(tilMonto, R.string.saving_expense_ok, Snackbar.LENGTH_SHORT)
                                 .show();
                     }
@@ -111,5 +112,11 @@ public class MainActivity extends AppCompatActivity {
             InputMethodManager imm = getSystemService(InputMethodManager.class);
             imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
         }
+    }
+
+    private void clearFields() {
+        etMonto.setText("");
+        etComentario.setText("");
+        spCategoria.setSelection(0);
     }
 }
