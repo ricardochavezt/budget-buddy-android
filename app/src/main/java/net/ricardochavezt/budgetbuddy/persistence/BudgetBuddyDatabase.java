@@ -5,8 +5,10 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
-@Database(entities = {CategoryEntity.class}, version = 1)
+@Database(entities = {CategoryEntity.class, ExpenseEntity.class}, version = 2)
+@TypeConverters({Converters.class})
 public abstract class BudgetBuddyDatabase extends RoomDatabase {
     public abstract CategoryDao categoryDao();
 
@@ -18,6 +20,7 @@ public abstract class BudgetBuddyDatabase extends RoomDatabase {
                 if (instance == null) {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                             BudgetBuddyDatabase.class,"budget_buddy_database")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

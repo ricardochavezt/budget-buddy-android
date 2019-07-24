@@ -10,6 +10,7 @@
     <string name="saving_expense_ok">Gasto registrado</string>
     <string name="mensaje_guardando">Guardando</string>
     <string name="hint_fecha">Fecha (dd/mm/yyyy)</string>
+    <string name="action_list_expenses">Listar</string>
     <string-array name="prompts_categoria">
         <item>(Cargando...)</item>
     </string-array>

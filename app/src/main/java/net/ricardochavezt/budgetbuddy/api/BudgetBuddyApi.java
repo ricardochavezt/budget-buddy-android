@@ -15,5 +15,8 @@ public interface BudgetBuddyApi {
     Call<List<Category>> getCategories();
 
     @POST("expenses")
-    Call<SaveExpenseResponse> saveExpense(@Body SaveExpenseRequest saveExpenseRequest);
+    Call<ExpenseResponse> saveExpense(@Body SaveExpenseRequest saveExpenseRequest);
+
+    @GET("expenses")
+    Call<List<ExpenseResponse>> getExpenses();
 }

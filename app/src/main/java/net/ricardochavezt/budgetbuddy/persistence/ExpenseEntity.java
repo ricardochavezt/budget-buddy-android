@@ -1,12 +1,15 @@
-package net.ricardochavezt.budgetbuddy.api;
+package net.ricardochavezt.budgetbuddy.persistence;
 
-import net.ricardochavezt.budgetbuddy.model.Category;
-import net.ricardochavezt.budgetbuddy.model.Expense;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
-public class SaveExpenseResponse {
+@Entity(tableName = "expense")
+public class ExpenseEntity {
+    @PrimaryKey
+    @NonNull
     private int id;
     private String amount;
     private int categoryId;
@@ -51,16 +54,5 @@ public class SaveExpenseResponse {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public Expense toExpense() {
-        Expense expense = new Expense();
-        expense.setId(id);
-        expense.setAmount(new BigDecimal(amount));
-        expense.setCategory(new Category());
-        expense.getCategory().setId(categoryId);
-        expense.setComment(comment);
-        expense.setMadeAt(madeAt);
-        return expense;
     }
 }
