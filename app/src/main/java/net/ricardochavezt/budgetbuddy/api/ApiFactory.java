@@ -20,8 +20,8 @@ public class ApiFactory {
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                 .create();
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(45, TimeUnit.SECONDS)
-                .writeTimeout(45, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
                 .build();
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.API_URL)
