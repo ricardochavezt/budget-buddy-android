@@ -10,20 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import net.ricardochavezt.budgetbuddy.R;
-import net.ricardochavezt.budgetbuddy.model.Expense;
+import net.ricardochavezt.budgetbuddy.viewmodel.ExpensesViewModel;
 
-import java.text.DateFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ExpenseListAdapter extends RecyclerView.Adapter {
-    // TODO refactor this
-    private DateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-    private NumberFormat formatoMonto = NumberFormat.getCurrencyInstance();
 
     class ExpenseViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.tvFecha)
@@ -40,7 +34,7 @@ public class ExpenseListAdapter extends RecyclerView.Adapter {
     }
 
     private final LayoutInflater inflater;
-    private List<Expense> expenses;
+    private List<ExpensesViewModel.ExpenseDisplay> expenses;
 
     public ExpenseListAdapter(Context context) {
         this.inflater = LayoutInflater.from(context);
@@ -56,11 +50,10 @@ public class ExpenseListAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ExpenseViewHolder expenseViewHolder = (ExpenseViewHolder) holder;
-        Expense expense = expenses.get(position);
-        expenseViewHolder.tvCategoria.setText(String.format("Categoria %d - %s",
-                expense.getCategory().getId(), expense.getComment()));
-        expenseViewHolder.tvMonto.setText(formatoMonto.format(expense.getAmount()));
-        expenseViewHolder.tvFecha.setText(formatoFecha.format(expense.getMadeAt()));
+        ExpensesViewModel.ExpenseDisplay expense = expenses.get(position);
+        expenseViewHolder.tvCategoria.setText(expense.getCategoryText());
+        expenseViewHolder.tvMonto.setText(expense.getAmount());
+        expenseViewHolder.tvFecha.setText(expense.getMadeAt());
     }
 
     @Override
@@ -69,7 +62,7 @@ public class ExpenseListAdapter extends RecyclerView.Adapter {
         return expenses.size();
     }
 
-    public void setExpenses(List<Expense> expenses) {
+    public void setExpenses(List<ExpensesViewModel.ExpenseDisplay> expenses) {
         this.expenses = expenses;
         notifyDataSetChanged();
     }
