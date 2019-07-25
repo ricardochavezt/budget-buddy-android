@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import net.ricardochavezt.budgetbuddy.api.ApiFactory;
 import net.ricardochavezt.budgetbuddy.api.BudgetBuddyApi;
@@ -15,6 +15,7 @@ import net.ricardochavezt.budgetbuddy.persistence.CategoryDao;
 import net.ricardochavezt.budgetbuddy.persistence.CategoryEntity;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -33,10 +34,20 @@ public class CategoryRepository {
     }
 
     public LiveData<List<Category>> getCategories() {
-        MutableLiveData<List<Category>> categories = new MutableLiveData<>();
-        ListCategoriesTask listCategoriesTask = new ListCategoriesTask(categoryDao, categories);
-        listCategoriesTask.execute();
+        return Transformations.map(categoryDao.getAllCategories(), entities -> {
+            if (entities.isEmpty()) {
+                // the LiveData returned by the DAO will be updated when we receive
+                // the API response
+                fetchCategoriesOnline();
+                return Collections.emptyList();
+            }
+            return entities.stream()
+                    .map(CategoryEntity::toCategory)
+                    .collect(Collectors.toList());
+        });
+    }
 
+    private void fetchCategoriesOnline() {
         api.getCategories().enqueue(new Callback<List<Category>>() {
             @Override
             public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
@@ -45,8 +56,6 @@ public class CategoryRepository {
                 insertCategoryTask.execute(categoryList.toArray(new Category[]{}));
                 try {
                     insertCategoryTask.get();
-                    ListCategoriesTask listCategoriesTask = new ListCategoriesTask(categoryDao, categories);
-                    listCategoriesTask.execute();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -61,29 +70,6 @@ public class CategoryRepository {
                 //categories.setValue(Collections.emptyList());
             }
         });
-        return categories;
-    }
-
-    private static class ListCategoriesTask extends AsyncTask<Void, Void, List<CategoryEntity>> {
-        private CategoryDao categoryDao;
-        private MutableLiveData<List<Category>> categoryLiveData;
-
-        ListCategoriesTask(CategoryDao categoryDao, MutableLiveData<List<Category>> categoryLiveData) {
-            this.categoryDao = categoryDao;
-            this.categoryLiveData = categoryLiveData;
-        }
-
-        @Override
-        protected List<CategoryEntity> doInBackground(Void... voids) {
-            return categoryDao.getAllCategories();
-        }
-
-        @Override
-        protected void onPostExecute(List<CategoryEntity> categoryEntities) {
-            categoryLiveData.setValue(categoryEntities.stream()
-                    .map(c -> c.toCategory())
-                    .collect(Collectors.toList()));
-        }
     }
 
     private static class InsertCategoryTask extends AsyncTask<Category, Void, Void> {
