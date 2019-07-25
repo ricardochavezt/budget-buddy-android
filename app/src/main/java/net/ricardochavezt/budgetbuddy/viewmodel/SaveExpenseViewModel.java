@@ -1,5 +1,9 @@
 package net.ricardochavezt.budgetbuddy.viewmodel;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,7 +16,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class SaveExpenseViewModel extends ViewModel {
+public class SaveExpenseViewModel extends AndroidViewModel {
+
+    public SaveExpenseViewModel(@NonNull Application application) {
+        super(application);
+    }
 
     public class SaveExpenseResponse {
         private boolean amountError;
@@ -66,7 +74,7 @@ public class SaveExpenseViewModel extends ViewModel {
             saveExpenseResponse.setValue(response);
         }
         else {
-            ExpenseRepository expenseRepository = new ExpenseRepository();
+            ExpenseRepository expenseRepository = new ExpenseRepository(getApplication());
             expenseRepository.saveExpense(amount, categoryId, comment, madeAt, new ExpenseRepository.SaveExpenseCallback() {
                 @Override
                 public void onSuccess(Expense savedExpense) {

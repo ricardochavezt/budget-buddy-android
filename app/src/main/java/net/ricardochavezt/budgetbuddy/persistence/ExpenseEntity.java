@@ -2,11 +2,18 @@ package net.ricardochavezt.budgetbuddy.persistence;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import net.ricardochavezt.budgetbuddy.model.Category;
+import net.ricardochavezt.budgetbuddy.model.Expense;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
-@Entity(tableName = "expense")
+@Entity(tableName = "expense",
+        foreignKeys = @ForeignKey(entity = CategoryEntity.class,
+                parentColumns = "id", childColumns = "categoryId"))
 public class ExpenseEntity {
     @PrimaryKey
     @NonNull
@@ -54,5 +61,16 @@ public class ExpenseEntity {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Expense toExpense() {
+        Expense expense = new Expense();
+        expense.setId(getId());
+        expense.setAmount(new BigDecimal(getAmount()));
+        expense.setMadeAt(getMadeAt());
+        expense.setComment(getComment());
+        expense.setCategory(new Category());
+        expense.getCategory().setId(getCategoryId());
+        return expense;
     }
 }

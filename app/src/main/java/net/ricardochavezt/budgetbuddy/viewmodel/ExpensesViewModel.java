@@ -1,5 +1,9 @@
 package net.ricardochavezt.budgetbuddy.viewmodel;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
@@ -14,7 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ExpensesViewModel extends ViewModel {
+public class ExpensesViewModel extends AndroidViewModel {
 
     private DateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
     private NumberFormat formatoMonto = new DecimalFormat("'S/.' 0.00");
@@ -51,8 +55,9 @@ public class ExpensesViewModel extends ViewModel {
     private ExpenseRepository expenseRepository;
     private LiveData<List<ExpenseDisplay>> expenses;
 
-    public ExpensesViewModel() {
-        this.expenseRepository = new ExpenseRepository();
+    public ExpensesViewModel(@NonNull Application application) {
+        super(application);
+        this.expenseRepository = new ExpenseRepository(getApplication());
     }
 
     public LiveData<List<ExpenseDisplay>> getExpenses() {

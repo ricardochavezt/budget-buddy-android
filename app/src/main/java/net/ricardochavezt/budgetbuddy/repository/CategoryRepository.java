@@ -54,13 +54,6 @@ public class CategoryRepository {
                 InsertCategoryTask insertCategoryTask = new InsertCategoryTask(categoryDao);
                 List<Category> categoryList = response.body();
                 insertCategoryTask.execute(categoryList.toArray(new Category[]{}));
-                try {
-                    insertCategoryTask.get();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
 
             @Override
