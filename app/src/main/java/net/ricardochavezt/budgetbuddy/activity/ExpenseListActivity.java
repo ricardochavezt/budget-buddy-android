@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +36,7 @@ public class ExpenseListActivity extends AppCompatActivity {
         final ExpenseListAdapter expenseListAdapter = new ExpenseListAdapter(this);
         rvExpenses.setAdapter(expenseListAdapter);
         rvExpenses.setLayoutManager(new LinearLayoutManager(this));
+        rvExpenses.addItemDecoration(new DividerItemDecoration(rvExpenses.getContext(), DividerItemDecoration.VERTICAL));
 
         viewModel = ViewModelProviders.of(this).get(ExpensesViewModel.class);
         viewModel.getExpenses().observe(this, expenses -> {
