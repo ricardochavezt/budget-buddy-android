@@ -18,10 +18,6 @@ import java.util.Date;
 
 public class SaveExpenseViewModel extends AndroidViewModel {
 
-    public SaveExpenseViewModel(@NonNull Application application) {
-        super(application);
-    }
-
     public class SaveExpenseResponse {
         private boolean amountError;
         private String amountErrorMessage;
@@ -50,9 +46,45 @@ public class SaveExpenseViewModel extends AndroidViewModel {
         }
     }
 
+    private String amount;
+    private int categoryId = -1;
+    private String comment;
+    private Date madeAt;
+    private MutableLiveData<String> madeAtDisplay;
+
+    public SaveExpenseViewModel(@NonNull Application application) {
+        super(application);
+        madeAtDisplay = new MutableLiveData<>();
+    }
+
     public static final DateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
 
-    public LiveData<SaveExpenseResponse> saveExpense(String amount, int categoryId, String comment, Date madeAt) {
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Date getMadeAt() {
+        return madeAt;
+    }
+
+    public void setMadeAt(Date madeAt) {
+        this.madeAt = madeAt;
+        madeAtDisplay.setValue(formatoFecha.format(this.madeAt));
+    }
+
+    public LiveData<String> displayMadeAt() {
+        return madeAtDisplay;
+    }
+
+    public LiveData<SaveExpenseResponse> saveExpense() {
         MutableLiveData<SaveExpenseResponse> saveExpenseResponse = new MutableLiveData<>();
         SaveExpenseResponse response = new SaveExpenseResponse();
         if (amount == null || amount.trim().isEmpty()) {

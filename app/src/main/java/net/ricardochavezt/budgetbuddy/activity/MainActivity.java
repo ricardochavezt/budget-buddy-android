@@ -3,6 +3,7 @@ package net.ricardochavezt.budgetbuddy.activity;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.DatePickerDialog;
@@ -34,6 +35,8 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemSelected;
+import butterknife.OnTextChanged;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -76,7 +79,10 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel = ViewModelProviders.of(this).get(SaveExpenseViewModel.class);
 
-        etFecha.setText(viewModel.formatoFecha.format(new Date()));
+        viewModel.displayMadeAt().observe(this, strFecha -> {
+            etFecha.setText(strFecha);
+        });
+        viewModel.setMadeAt(new Date());
     }
 
     @Override
@@ -97,47 +103,44 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @OnTextChanged(R.id.etMonto)
+    public void etMontoTextChanged(CharSequence text){
+        viewModel.setAmount(text.toString());
+        tilMonto.setError(null);
+    }
+
+    @OnItemSelected(R.id.spCategoria)
+    public void spCategoriaSelectionChanged(int position) {
+        if (spCategoria.getItemAtPosition(position) instanceof Category) {
+            Category selectedCategory = (Category) spCategoria.getItemAtPosition(position);
+            viewModel.setCategoryId(selectedCategory.getId());
+        }
+    }
+
+    @OnTextChanged(R.id.etComentario)
+    public void etComentarioTextChanged(CharSequence text) {
+        viewModel.setComment(text.toString());
+    }
+
     @OnClick(R.id.etFecha)
     public void etFechaClick() {
-        Date fechaIngresada;
-        try {
-            fechaIngresada = viewModel.formatoFecha.parse(etFecha.getText().toString());
-        } catch (ParseException e) {
-            Log.e("RegistrarGasto", "etFechaClick: error", e);
-            fechaIngresada = new Date();
-        }
-        Log.d("RegistrarGasto", "etFechaClick: " + fechaIngresada);
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(fechaIngresada);
-        Log.d("RegistrarGasto", String.format("etFechaClick: %d-%d-%d", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)));
+        calendar.setTime(viewModel.getMadeAt());
 
         new DatePickerDialog(this, (datePicker, year, month, date) -> {
             calendar.set(Calendar.YEAR, year);
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, date);
-            etFecha.setText(viewModel.formatoFecha.format(calendar.getTime()));
+            viewModel.setMadeAt(calendar.getTime());
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
                 .show();
     }
 
     @OnClick(R.id.btnRegistrar)
     public void btnRegistrarClick() {
-        // TODO clear on edit
-        tilMonto.setError(null);
-        // TODO handle this right
-        Date fechaGasto;
-        try {
-            fechaGasto = viewModel.formatoFecha.parse(etFecha.getText().toString());
-        } catch (ParseException e) {
-            fechaGasto = new Date();
-        }
-
         progressOverlay.setVisibility(View.VISIBLE);
 
-        Category selectedCategory = (Category) spCategoria.getSelectedItem();
-        int categoryId = selectedCategory != null ? selectedCategory.getId() : -1;
-        viewModel.saveExpense(etMonto.getText().toString(), categoryId, etComentario.getText().toString(), fechaGasto)
-                .observe(this, saveExpenseResponse -> {
+        viewModel.saveExpense().observe(this, saveExpenseResponse -> {
                     progressOverlay.setVisibility(View.GONE);
                     if (!saveExpenseResponse.isSaveOK()) {
                         if (saveExpenseResponse.isAmountError()) {
