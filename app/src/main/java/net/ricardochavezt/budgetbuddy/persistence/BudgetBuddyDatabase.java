@@ -7,7 +7,9 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-@Database(entities = {CategoryEntity.class, ExpenseEntity.class}, version = 3)
+@Database(entities = {CategoryEntity.class, ExpenseEntity.class},
+        views = {ExpenseWithCategoryEntity.class},
+        version = 4)
 @TypeConverters({Converters.class})
 public abstract class BudgetBuddyDatabase extends RoomDatabase {
     public abstract CategoryDao categoryDao();

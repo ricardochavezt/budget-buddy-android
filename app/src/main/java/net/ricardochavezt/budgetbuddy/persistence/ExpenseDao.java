@@ -16,4 +16,7 @@ public interface ExpenseDao {
 
     @Query("SELECT * FROM expense ORDER BY madeAt DESC, id DESC")
     LiveData<List<ExpenseEntity>> getAllExpenses();
+
+    @Query("SELECT * FROM expense_category ORDER BY madeAt DESC, id DESC")
+    LiveData<List<ExpenseWithCategoryEntity>> getAllExpensesWithCategories();
 }

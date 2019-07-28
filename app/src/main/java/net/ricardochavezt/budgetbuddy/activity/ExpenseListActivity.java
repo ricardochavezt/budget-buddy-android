@@ -39,8 +39,6 @@ public class ExpenseListActivity extends AppCompatActivity {
         rvExpenses.addItemDecoration(new DividerItemDecoration(rvExpenses.getContext(), DividerItemDecoration.VERTICAL));
 
         viewModel = ViewModelProviders.of(this).get(ExpensesViewModel.class);
-        viewModel.getExpenses().observe(this, expenses -> {
-            expenseListAdapter.setExpenses(expenses);
-        });
+        viewModel.getExpenses().observe(this, expenseListAdapter::setExpenses);
     }
 }

@@ -31,10 +31,10 @@ public class ExpensesViewModel extends AndroidViewModel {
         public ExpenseDisplay(Expense expense) {
             this.amount = formatoMonto.format(expense.getAmount());
             if (expense.getComment() == null || expense.getComment().isEmpty()) {
-                this.categoryText = String.format("Categoría %d", expense.getCategory().getId());
+                this.categoryText = expense.getCategory().getName();
             }
             else {
-                this.categoryText = String.format("Categoría %d (%s)", expense.getCategory().getId(), expense.getComment());
+                this.categoryText = String.format("%s (%s)", expense.getCategory().getName(), expense.getComment());
             }
             this.madeAt = formatoFecha.format(expense.getMadeAt());
         }

@@ -16,6 +16,7 @@ import net.ricardochavezt.budgetbuddy.model.Expense;
 import net.ricardochavezt.budgetbuddy.persistence.BudgetBuddyDatabase;
 import net.ricardochavezt.budgetbuddy.persistence.ExpenseDao;
 import net.ricardochavezt.budgetbuddy.persistence.ExpenseEntity;
+import net.ricardochavezt.budgetbuddy.persistence.ExpenseWithCategoryEntity;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -72,13 +73,13 @@ public class ExpenseRepository {
     }
 
     public LiveData<List<Expense>> getExpenses() {
-        return Transformations.map(expenseDao.getAllExpenses(), entities -> {
+        return Transformations.map(expenseDao.getAllExpensesWithCategories(), entities -> {
             if (entities.isEmpty()) {
                 fetchExpensesOnline();
                 return Collections.emptyList();
             }
             return entities.stream()
-                    .map(ExpenseEntity::toExpense)
+                    .map(ExpenseWithCategoryEntity::toExpense)
                     .collect(Collectors.toList());
         });
     }
