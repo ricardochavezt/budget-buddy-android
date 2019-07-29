@@ -3,19 +3,16 @@ package net.ricardochavezt.budgetbuddy.activity;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -25,10 +22,10 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import net.ricardochavezt.budgetbuddy.R;
 import net.ricardochavezt.budgetbuddy.model.Category;
+import net.ricardochavezt.budgetbuddy.util.ValidationError;
 import net.ricardochavezt.budgetbuddy.viewmodel.CategoriesViewModel;
 import net.ricardochavezt.budgetbuddy.viewmodel.SaveExpenseViewModel;
 
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -138,36 +135,56 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btnRegistrar)
     public void btnRegistrarClick() {
-        progressOverlay.setVisibility(View.VISIBLE);
 
         viewModel.saveExpense().observe(this, saveExpenseResponse -> {
+            switch (saveExpenseResponse.getResult()) {
+                case INVALID_DATA:
+                    showValidationErrors(saveExpenseResponse.getErrorField(), saveExpenseResponse.getValidationError());
+                    break;
+                case IN_PROGRESS:
+                    progressOverlay.setVisibility(View.VISIBLE);
+                    break;
+                case ERROR:
                     progressOverlay.setVisibility(View.GONE);
-                    if (!saveExpenseResponse.isSaveOK()) {
-                        if (saveExpenseResponse.isAmountError()) {
-                            tilMonto.setError(saveExpenseResponse.getAmountErrorMessage());
-                        }
-                        else if (saveExpenseResponse.isCategoryError()) {
-                            Toast.makeText(this, R.string.error_category_not_selected, Toast.LENGTH_SHORT)
-                                    .show();
-                        }
-                        else {
-                            hideSoftKeyboard();
-                            Snackbar.make(tilMonto, R.string.error_saving_expense, Snackbar.LENGTH_SHORT).setAction("Ver mensaje", view -> {
+                    hideSoftKeyboard();
+                    Snackbar.make(tilMonto, R.string.error_saving_expense, Snackbar.LENGTH_SHORT)
+                            .setAction(R.string.text_view_message, view -> {
                                 new AlertDialog.Builder(this)
                                         .setTitle(R.string.error_message_title)
-                                        .setMessage(saveExpenseResponse.getErrorMessage())
+                                        .setMessage(saveExpenseResponse.getServerErrorMessage())
                                         .setPositiveButton(android.R.string.ok, null)
                                         .show();
-                            }).show();
-                        }
-                    }
-                    else {
-                        hideSoftKeyboard();
-                        clearFields();
-                        Snackbar.make(tilMonto, R.string.saving_expense_ok, Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                });
+                            })
+                            .show();
+                    break;
+                case OK:
+                    progressOverlay.setVisibility(View.GONE);
+                    hideSoftKeyboard();
+                    clearFields();
+                    Snackbar.make(tilMonto, R.string.saving_expense_ok, Snackbar.LENGTH_SHORT)
+                            .show();
+                    break;
+            }
+        });
+    }
+
+    private void showValidationErrors(SaveExpenseViewModel.Fields errorField, ValidationError validationError) {
+        switch (errorField) {
+            case AMOUNT:
+                switch (validationError) {
+                    case EMPTY:
+                        tilMonto.setError(getString(R.string.error_amount_empty));
+                        break;
+                    case INVALID_VALUE:
+                        tilMonto.setError(getString(R.string.error_amount_invalid));
+                        break;
+                }
+                break;
+            case CATEGORY:
+                Toast.makeText(this, R.string.error_category_not_selected, Toast.LENGTH_SHORT)
+                        .show();
+                break;
+        }
     }
 
     private void hideSoftKeyboard() {

@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModel;
 
 import net.ricardochavezt.budgetbuddy.model.Expense;
 import net.ricardochavezt.budgetbuddy.repository.ExpenseRepository;
+import net.ricardochavezt.budgetbuddy.util.Result;
+import net.ricardochavezt.budgetbuddy.util.ValidationError;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -17,32 +19,45 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SaveExpenseViewModel extends AndroidViewModel {
+    public enum Fields {
+        AMOUNT, CATEGORY
+    }
 
     public class SaveExpenseResponse {
-        private boolean amountError;
-        private String amountErrorMessage;
-        private boolean categoryError;
-        private boolean saveOK;
-        private String errorMessage;
+        private Result result;
+        private ValidationError validationError;
+        private Fields errorField;
+        private String serverErrorMessage;
 
-        public String getErrorMessage() {
-            return errorMessage;
+        public SaveExpenseResponse(Result result) {
+            this.result = result;
         }
 
-        public boolean isSaveOK() {
-            return saveOK;
+        public SaveExpenseResponse(Result result, Fields errorField, ValidationError validationError) {
+            this.result = result;
+            this.validationError = validationError;
+            this.errorField = errorField;
         }
 
-        public boolean isCategoryError() {
-            return categoryError;
+        public SaveExpenseResponse(Result result, String serverErrorMessage) {
+            this.result = result;
+            this.serverErrorMessage = serverErrorMessage;
         }
 
-        public String getAmountErrorMessage() {
-            return amountErrorMessage;
+        public Result getResult() {
+            return result;
         }
 
-        public boolean isAmountError() {
-            return amountError;
+        public ValidationError getValidationError() {
+            return validationError;
+        }
+
+        public Fields getErrorField() {
+            return errorField;
+        }
+
+        public String getServerErrorMessage() {
+            return serverErrorMessage;
         }
     }
 
@@ -86,41 +101,40 @@ public class SaveExpenseViewModel extends AndroidViewModel {
 
     public LiveData<SaveExpenseResponse> saveExpense() {
         MutableLiveData<SaveExpenseResponse> saveExpenseResponse = new MutableLiveData<>();
-        SaveExpenseResponse response = new SaveExpenseResponse();
         if (amount == null || amount.trim().isEmpty()) {
-            response.amountError = true;
-            response.amountErrorMessage = "Debe ingresar un monto";
+            saveExpenseResponse.setValue(new SaveExpenseResponse(Result.INVALID_DATA,
+                    Fields.AMOUNT, ValidationError.EMPTY));
         }
         else {
             try {
                 new BigDecimal(amount);
             } catch (NumberFormatException e) {
-                response.amountError = true;
-                response.amountErrorMessage = "El monto ingresado no es válido";
+                saveExpenseResponse.setValue(new SaveExpenseResponse(Result.INVALID_DATA,
+                        Fields.AMOUNT, ValidationError.INVALID_VALUE));
             }
         }
         if (categoryId < 0) {
-            response.categoryError = true;
+            saveExpenseResponse.setValue(new SaveExpenseResponse(Result.INVALID_DATA,
+                    Fields.CATEGORY, ValidationError.EMPTY));
         }
-        if (response.amountError ||response.categoryError) {
-            saveExpenseResponse.setValue(response);
-        }
-        else {
-            ExpenseRepository expenseRepository = new ExpenseRepository(getApplication());
-            expenseRepository.saveExpense(amount, categoryId, comment, madeAt, new ExpenseRepository.SaveExpenseCallback() {
-                @Override
-                public void onSuccess(Expense savedExpense) {
-                    response.saveOK = true;
-                    saveExpenseResponse.setValue(response);
-                }
 
-                @Override
-                public void onError(String errorMessage) {
-                    response.errorMessage = errorMessage;
-                    saveExpenseResponse.setValue(response);
-                }
-            });
+        if (saveExpenseResponse.getValue() != null) {
+            return saveExpenseResponse;
         }
+
+        saveExpenseResponse.setValue(new SaveExpenseResponse(Result.IN_PROGRESS));
+        ExpenseRepository expenseRepository = new ExpenseRepository(getApplication());
+        expenseRepository.saveExpense(amount, categoryId, comment, madeAt, new ExpenseRepository.SaveExpenseCallback() {
+            @Override
+            public void onSuccess(Expense savedExpense) {
+                saveExpenseResponse.setValue(new SaveExpenseResponse(Result.OK));
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                saveExpenseResponse.setValue(new SaveExpenseResponse(Result.ERROR, errorMessage));
+            }
+        });
         return saveExpenseResponse;
     }
 }

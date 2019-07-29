@@ -11,6 +11,9 @@
     <string name="mensaje_guardando">Guardando</string>
     <string name="hint_fecha">Fecha (dd/mm/yyyy)</string>
     <string name="action_list_expenses">Listar</string>
+    <string name="error_amount_empty">Debe ingresar un monto</string>
+    <string name="error_amount_invalid">El monto ingresado es inválido</string>
+    <string name="text_view_message">Ver mensaje</string>
     <string-array name="prompts_categoria">
         <item>(Cargando...)</item>
     </string-array>
